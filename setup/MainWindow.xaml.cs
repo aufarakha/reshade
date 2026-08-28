@@ -684,7 +684,7 @@ namespace ReShade.Setup
 				return;
 			}
 
-			if (peInfo.StackSize < 1024 * 1024)
+			if (peInfo.StackSize < 1000000 && !executableName.Equals("gamelaunchhelper.exe", StringComparison.OrdinalIgnoreCase))
 			{
 				UpdateStatus("Waiting for user confirmation ...");
 
