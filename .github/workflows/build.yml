@@ -1,4 +1,44 @@
-steps:
+name: build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    permissions:
+      contents: read
+
+    name: build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    permissions:
+      contents: read
+
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -14,18 +54,20 @@ steps:
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      # Diubah dari 32-bit ke Win32
       - name: Build ReShade (32-bit)
         run: |
-          msbuild ReShade.sln /p:Configuration=Release /p:Platform=32-bit
+          msbuild ReShade.sln /p:Configuration=Release /p:Platform=Win32
 
       - name: Build ReShade (64-bit)
         run: |
-          msbuild ReShade.sln /p:Configuration=Release /p:Platform=64-bit
+          msbuild ReShade.sln /p:Configuration=Release /p:Platform=x64
 
       - name: Build ReShade Setup
         run: |
-          msbuild ReShade.sln /p:Configuration="Release Setup"
+          msbuild ReShade.sln /p:Configuration="Release Setup" /p:Platform=x64
 
+      # Menggunakan versi @v4 dan wildcard path untuk memastikan file terdeteksi
       - name: Upload ReShade (32-bit)
         uses: actions/upload-artifact@v4
         with:
@@ -44,5 +86,5 @@ steps:
         uses: actions/upload-artifact@v4
         with:
           name: ReShade-Setup
-          path: bin/**/Release/ReShade*.exe
+          path: bin/**/Release/ReShade Setup.exe
           if-no-files-found: error
