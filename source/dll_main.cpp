@@ -289,20 +289,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD fdwReason, LPVOID)
 					reshade::hooks::register_module(get_system_path() / L"dinput8.dll");
 				}
 
-#if RESHADE_ADDON == 1
-				if (!GetEnvironmentVariableW(L"RESHADE_DISABLE_NETWORK_HOOK", nullptr, 0))
-				{
-					reshade::hooks::register_module(L"ws2_32.dll");
-				}
-				else
-				{
-					// Disable network hooks when requested through an environment variable and always disable add-ons in that case
-					extern volatile long g_network_traffic;
-					g_network_traffic = std::numeric_limits<long>::max(); // Special value to indicate that add-ons should never be enabled
-					reshade::addon_enabled = false;
-				}
-#endif
-
 				if (!GetEnvironmentVariableW(L"RESHADE_DISABLE_GRAPHICS_HOOK", nullptr, 0))
 				{
 					// Can optionally hook the graphics entry points exported by NVIDIA Streamline, instead of the system ones, to have ReShade apply before Streamline

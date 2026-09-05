@@ -948,41 +948,6 @@ void reshade::runtime::on_present()
 	// Save modified INI files
 	if (!ini_file::flush_cache())
 		_preset_save_successful = false;
-
-#if RESHADE_ADDON == 1
-	// Detect high network traffic
-	extern volatile long g_network_traffic;
-
-	static int cooldown = 0, traffic = 0;
-	if (cooldown-- > 0)
-	{
-		traffic += g_network_traffic > 0;
-	}
-	else
-	{
-		const bool was_enabled = addon_enabled;
-		addon_enabled = traffic < 10;
-		traffic = 0;
-		cooldown = 60;
-
-		if (addon_enabled != was_enabled)
-		{
-			if (was_enabled)
-				_backup_texture_semantic_bindings = _texture_semantic_bindings;
-
-			for (const auto &binding : _backup_texture_semantic_bindings)
-			{
-				if (binding.second.first == _effect_permutations[0].color_srv[0] && binding.second.second == _effect_permutations[0].color_srv[1])
-					continue;
-
-				update_texture_bindings(binding.first.c_str(), addon_enabled ? binding.second.first : api::resource_view { 0 }, addon_enabled ? binding.second.second : api::resource_view { 0 });
-			}
-		}
-	}
-
-	if (std::numeric_limits<long>::max() != g_network_traffic)
-		g_network_traffic = 0;
-#endif
 }
 
 void reshade::runtime::load_config()

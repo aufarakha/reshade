@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2014 Patrick Mours
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -172,10 +172,6 @@ namespace ReShade.Setup
 				appPage.PathBox.TextChanged += (sender2, e2) => NextButton.IsEnabled = !string.IsNullOrEmpty(appPage.FileName) && Path.GetExtension(appPage.FileName).Equals(".exe", StringComparison.OrdinalIgnoreCase) && File.Exists(appPage.FileName);
 
 				ResetStatus();
-
-#if RESHADE_ADDON
-				MessageBox.Show(this, "This build of ReShade is intended for singleplayer games only and may cause bans in multiplayer games.", "Warning", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-#endif
 
 				CheckForUpdate(productVersion);
 			}
@@ -659,30 +655,6 @@ namespace ReShade.Setup
 
 			// Check whether the API is specified in the compatibility list, in which case setup can continue right away
 			string executableName = Path.GetFileName(currentInfo.targetPath);
-			if (compatibilityIni?.GetString(executableName, "Banned") == "1")
-			{
-				// Automatically uninstall ReShade from banned applications
-				foreach (string conflictingModuleName in new[] { "d3d9.dll", "d3d10.dll", "d3d11.dll", "d3d12.dll", "dxgi.dll", "opengl32.dll" })
-				{
-					string conflictingModulePath = Path.Combine(basePath, conflictingModuleName);
-
-					try
-					{
-						if (GetModuleProductName(conflictingModulePath) == "ReShade")
-						{
-							File.Delete(conflictingModulePath);
-						}
-					}
-					catch (SystemException)
-					{
-						// Ignore errors
-						continue;
-					}
-				}
-
-				UpdateStatusAndFinish(false, "The target application is known to have blocked or banned the usage of ReShade. Cannot continue installation.");
-				return;
-			}
 
 			if (peInfo.StackSize < 1000000 && !executableName.Equals("gamelaunchhelper.exe", StringComparison.OrdinalIgnoreCase))
 			{

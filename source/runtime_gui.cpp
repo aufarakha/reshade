@@ -3242,13 +3242,6 @@ void reshade::runtime::draw_gui_addons()
 	ini_file &config = global_config();
 
 #if RESHADE_ADDON == 1
-	if (!addon_enabled)
-	{
-		ImGui::PushTextWrapPos();
-		ImGui::TextColored(COLOR_YELLOW, _("High network activity discovered.\nAll add-ons are disabled to prevent exploitation."));
-		ImGui::PopTextWrapPos();
-		return;
-	}
 
 	ImGui::AlignTextToFramePadding();
 	ImGui::TextUnformatted(_("This build of ReShade has only limited add-on functionality."));
