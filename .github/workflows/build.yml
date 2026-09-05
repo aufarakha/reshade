@@ -20,46 +20,51 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
           submodules: true
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
       - name: Set up MSBuild
-        uses: microsoft/setup-msbuild@v3
+        uses: microsoft/setup-msbuild@v2
 
+      # Diubah dari 32-bit ke Win32
       - name: Build ReShade (32-bit)
         run: |
-          msbuild ReShade.sln /p:Configuration=Release /p:Platform=32-bit
+          msbuild ReShade.sln /p:Configuration=Release /p:Platform=Win32
 
       - name: Build ReShade (64-bit)
         run: |
-          msbuild ReShade.sln /p:Configuration=Release /p:Platform=64-bit
+          msbuild ReShade.sln /p:Configuration=Release /p:Platform=x64
 
       - name: Build ReShade Setup
         run: |
-          msbuild ReShade.sln /p:Configuration="Release Setup"
+          msbuild ReShade.sln /p:Configuration="Release Setup" /p:Platform=x64
 
+      # Menggunakan versi @v4 dan wildcard path untuk memastikan file terdeteksi
       - name: Upload ReShade (32-bit)
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
-          name: ReShade (32-bit)
-          path: './bin/Win32/Release/ReShade32.dll'
+          name: ReShade-32bit
+          path: bin/**/Release/ReShade32.dll
+          if-no-files-found: error
 
       - name: Upload ReShade (64-bit)
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
-          name: ReShade (64-bit)
-          path: './bin/x64/Release/ReShade64.dll'
+          name: ReShade-64bit
+          path: bin/**/Release/ReShade64.dll
+          if-no-files-found: error
 
       - name: Upload ReShade Setup
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
-          name: ReShade Setup
-          path: './bin/AnyCPU/Release/ReShade Setup.exe'
+          name: ReShade-Setup
+          path: bin/**/Release/ReShade Setup.exe
+          if-no-files-found: error
